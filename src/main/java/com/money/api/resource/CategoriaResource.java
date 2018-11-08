@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -60,8 +61,8 @@ public class CategoriaResource {
 	} 
 	*/
 	@PostMapping //anotação para salvar no banco - salvar uma nova categoria
-		//retorno a categoria ja criada no Body
-	public ResponseEntity<Categoria> criar(@RequestBody Categoria categoria, HttpServletResponse response) {//o HttpServletResponse para trabalahr com o Header
+		//retorno a categoria ja criada no Body @Valid valida com been validation a entidade no banco
+	public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {//o HttpServletResponse para trabalahr com o Header
 		 Categoria categoriaSalva = categoriaRepository.save(categoria); //Pego o codigo do id na hora de salvar
 		 
 		 URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")//uso o builder do Spring pegando a URI apartir da requisição atual
@@ -72,10 +73,23 @@ public class CategoriaResource {
 		 return ResponseEntity.created(uri).body(categoria); // retorno a categoria ja criada, ja repassando também o status 201 created
 		 													// sem a necessidade de anotação do Spring @ResponseStatus(HttpStatus.CREATED)
 	} 
+	/*A biblioteca Jackson do spring (spring.jackson) é responsavel por serializar e deserializar os dados para o banco
+	 * transforma JASON em OBJECT JAVA e o inverso!
+	 * uma boa validação é configurar par aque o jason enviado n seja enviado com propriedas a mais 
+	 * como por exemplo, na Entidade Categoria temos somente codigo e nome,
+	 * caso o jason enviado poasua mais coisa, a bilbioteca irá recusar estourando o erro para o usuaario
+	 * Configura-se na Aplication.Properties com a bilbioteca "spring.jackson.deserialization.fail-on-unknown-properties=true"
+	 * o defaut da biblioteca é false, sendo necessario passar para true*/
+	
+	
 	
 	//retonar a categoria criada
 	@GetMapping("/{codigo}") // buscando pelo codigo de forma variavel
-	public Categoria buscarPeloCodigo(@PathVariable Long codigo) { //codigo de gatMapping é um parametro do caminha(Path) 
-		return categoriaRepository.findOne(codigo);
+	public ResponseEntity<Categoria> buscarPeloCodigo(@PathVariable Long codigo) { //codigo de gatMapping é um parametro do caminha(Path) 
+		
+		Categoria recCatecogia = categoriaRepository.findOne(codigo);
+		
+		return recCatecogia != null ? ResponseEntity.ok(recCatecogia) : ResponseEntity.notFound().build();
+		
 	}
 }
