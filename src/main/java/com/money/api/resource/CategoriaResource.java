@@ -3,11 +3,11 @@ package com.money.api.resource;
 import java.net.URI;
 import java.util.List;
 
-import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.money.api.event.RecursoCriadoEvent;
 import com.money.api.model.Categoria;
 import com.money.api.repository.CategoriaRepository;
 
@@ -32,6 +32,9 @@ public class CategoriaResource {
 	@Autowired // faz com que o spring ache um implementação de categoria repository e injete dentro dela pra mim
 	//procure uma implementação de categoria repository e injete
 	private CategoriaRepository categoriaRepository; //vamos injetar o nosso repositorio criado 
+	
+	@Autowired
+	private ApplicationEventPublisher publisher;
 
 	@GetMapping // metodo sera chamado via get em Categorias
 	public List<Categoria> listar(){
@@ -65,12 +68,13 @@ public class CategoriaResource {
 	public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {//o HttpServletResponse para trabalahr com o Header
 		 Categoria categoriaSalva = categoriaRepository.save(categoria); //Pego o codigo do id na hora de salvar
 		 
-		 URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")//uso o builder do Spring pegando a URI apartir da requisição atual
-				 .buildAndExpand(categoriaSalva.getCodigo()).toUri();	//(o fromCurrentRequestUri), colocando um path(caminho), com builAndExpand passando o codigo
+		// URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")//uso o builder do Spring pegando a URI apartir da requisição atual
+		//		 .buildAndExpand(categoriaSalva.getCodigo()).toUri();	//(o fromCurrentRequestUri), colocando um path(caminho), com builAndExpand passando o codigo
 		 																//e salvando a URI numa variavel 		
-		 response.setHeader("Location", uri.toASCIIString()); //retorno o Header da response passando o Header Location passando o uri.toASCIIString();       	                  
-	
-		 return ResponseEntity.created(uri).body(categoria); // retorno a categoria ja criada, ja repassando também o status 201 created
+		// response.setHeader("Location", uri.toASCIIString()); //retorno o Header da response passando o Header Location passando o uri.toASCIIString();       	                  
+		 publisher.publishEvent(new RecursoCriadoEvent(this, response, categoriaSalva.getCodigo()));
+		 
+		 return ResponseEntity.status(HttpStatus.CREATED).body(categoria); // retorno a categoria ja criada, ja repassando também o status 201 created
 		 													// sem a necessidade de anotação do Spring @ResponseStatus(HttpStatus.CREATED)
 	} 
 	/*A biblioteca Jackson do spring (spring.jackson) é responsavel por serializar e deserializar os dados para o banco
