@@ -14,9 +14,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 
-@ComponentScan({"com.money.api.resource"})
-@EntityScan("com.money.api.model")
-@EnableJpaRepositories("com.money.api.repository")
 public class MoneyApiApplication  extends SpringBootServletInitializer{
 
 	public static void main(String[] args) {
