@@ -33,7 +33,6 @@ public class CorsFilter implements Filter{//será um filtro
 		resp.setHeader("Access-Control-Allow-Origin", origemPermitida); // header pra qual origem será permitida
 		resp.setHeader("Access-Control-Allow-Credentials", "true"); // header de credenciais para que o cookie seja enviado com o refreshToken
 		
-		
 		//Verificamos se os os metodos da requisicao sao um OPTIONS OU NAO
 		//verifico também se o header da minha requisicao é do tipo Origin
 		//Permitindo o pre-flytRequest**
