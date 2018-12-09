@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +38,8 @@ public class CategoriaResource {
 	private ApplicationEventPublisher publisher;
 
 	@GetMapping // metodo sera chamado via get em Categorias
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')") //dando permissão do OAuth 2 aos metodo // adicionado o  and #oauth2.hasScope('read') para somente leitura
+	//do usuario cliente mobile // esse escopo é o scopo do cliente, ja o ROLE é para o Usuario
 	public List<Categoria> listar(){
 		//injetando
 		return categoriaRepository.findAll(); // ja faz um select * from Categoria,
@@ -63,6 +66,9 @@ public class CategoriaResource {
 		 categoriaRepository.save(categoria);
 	} 
 	*/
+	
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and #oauth2.hasScope('write')") //dando permissão do OAuth 2 aos mpetodo //  and #oauth2.hasScope('read') para escrita por causa do novo cliet mobile que possue
+	//permissão somente para leitura
 	@PostMapping //anotação para salvar no banco - salvar uma nova categoria
 		//retorno a categoria ja criada no Body @Valid valida com been validation a entidade no banco
 	public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {//o HttpServletResponse para trabalahr com o Header
@@ -89,6 +95,7 @@ public class CategoriaResource {
 	
 	//retonar a categoria criada
 	@GetMapping("/{codigo}") // buscando pelo codigo de forma variavel
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')") //dando permissão do OAuth 2 aos mpetodo
 	public ResponseEntity<Categoria> buscarPeloCodigo(@PathVariable Long codigo) { //codigo de gatMapping é um parametro do caminha(Path) 
 		
 		Categoria recCatecogia = categoriaRepository.findOne(codigo);

@@ -4,6 +4,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -16,12 +17,17 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import com.money.api.config.property.MoneyApiProperty;
+
 // Classe para que possamos retirar o refresh token to corpo de resposta e faze-lo trafegar em coocke HTTP onde é mais seguro e n pode se pego no JS
 
 @ControllerAdvice
 public class RefreshTokenPostProcessor implements ResponseBodyAdvice<OAuth2AccessToken>{// o ResponseBodyAdvice pega a resposta passada no seu 
 																						//parametro generico (objeto OAuth2 vindo no body), ou seja irá pegar so as resposta do meu OAuth2
-
+	//passando configurações de producao
+	@Autowired
+	private MoneyApiProperty moneyApiProperty;
+	
 	@Override
 	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
 		return returnType.getMethod().getName().equals("postAccessToken"); // como pode vir objetos OAuth2 em outras repostas , como na de lançamento ou categoria por exemplo,
@@ -65,7 +71,8 @@ public class RefreshTokenPostProcessor implements ResponseBodyAdvice<OAuth2Acces
 		Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken); // damos um nome do token e passamos o token
 		//Propriedades do Cookie
 		refreshTokenCookie.setHttpOnly(true);// so será acessivel via Http
-		refreshTokenCookie.setSecure(false);// ele sera acessivel apenas https ou não // funciona nos http e https por enquanto TODO: Mudar para true em producao
+//		refreshTokenCookie.setSecure(false);// ele sera acessivel apenas https ou não // funciona nos http e https por enquanto TODO: Mudar para true em producao
+		refreshTokenCookie.setSecure(moneyApiProperty.getSeguranca().isEnableHttps()); // passando true para producao
 		refreshTokenCookie.setPath(req.getContextPath()+ "/oauth/token"); // para qual caminho o cookie será enviado pelo browser/ aqui usamos o request // se tiver contextPath ele busca e concatena
 		refreshTokenCookie.setMaxAge(2592000); // em quanto tempo o cookie irá expirar em dias - 2592000 = a 30 dias
 		resp.addCookie(refreshTokenCookie); // adicionamos o cookie na reposta

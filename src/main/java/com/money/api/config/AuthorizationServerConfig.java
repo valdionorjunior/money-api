@@ -22,13 +22,21 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 		clients.inMemory()//tipo do cliente, poderia se no jdbc
-			.withClient("angular")//nome do cliente
-			.secret("@ngul@r0")//senha do cliente
-			.scopes("read", "write")//qual scopo do cliente, pode-se definir scopos diferentes para clientes diferentes
-			.authorizedGrantTypes("password", "refresh_token")//define qual o GranType utilizado - nesse caso o password flow // atualizado para ter um novo GranType refresh_token,
-//			para que o proprio browser posssa atualizar o token sem que redirecionet o usuario para tela de login.
-			.accessTokenValiditySeconds(20)//tempo em segundo de validade do token // 1800 sec para 30 min // atualizado par a20 sec
-			.refreshTokenValiditySeconds(3600 * 24); //validade to refresh_token -> neste caso 3600 é 1 h que * 24 da um dia inteiro de refresh. pode dar refresh um dia inteiro
+				.withClient("angular")//nome do cliente
+				.secret("@ngul@r0")//senha do cliente
+				.scopes("read", "write")//qual scopo do cliente, pode-se definir scopos diferentes para clientes diferentes
+				.authorizedGrantTypes("password", "refresh_token")//define qual o GranType utilizado - nesse caso o password flow // atualizado para ter um novo GranType refresh_token,
+	//			para que o proprio browser posssa atualizar o token sem que redirecionet o usuario para tela de login.
+				.accessTokenValiditySeconds(1800)//tempo em segundo de validade do token // 1800 sec para 30 min // atualizado par a20 sec
+				.refreshTokenValiditySeconds(3600 * 24) //validade to refresh_token -> neste caso 3600 é 1 h que * 24 da um dia inteiro de refresh. pode dar refresh um dia inteiro
+			.and()
+				.withClient("mobile")//Adicionado outro usuario client somente para leitura
+				.secret("m0b1l30")
+				.scopes("read")
+				.authorizedGrantTypes("password", "refresh_token")
+				.accessTokenValiditySeconds(1800)
+				.refreshTokenValiditySeconds(3600 * 24);
+	
 	}
 	
 	@Override

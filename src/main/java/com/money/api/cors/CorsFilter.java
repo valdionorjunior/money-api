@@ -11,16 +11,22 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import com.money.api.config.property.MoneyApiProperty;
 
 @Component // É um componente do Spring
 @Order(Ordered.HIGHEST_PRECEDENCE) // É um componente com prioridade bem alta
 public class CorsFilter implements Filter{//será um filtro
 	
-	private String origemPermitida = "http://localhost:8000"; //TODO: Configurar pra diferentes ambientes
-
+//	private String origemPermitida = "http://localhost:8000"; //TODO: Configurar pra diferentes ambientes
+ //injetando a configuraçã ode origin permitida
+	@Autowired
+	private MoneyApiProperty moneyApiProperty;
+	
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
@@ -30,14 +36,17 @@ public class CorsFilter implements Filter{//será um filtro
 		HttpServletResponse resp = (HttpServletResponse) response;
 		
 		//setandos os headers de origem permitida e 
-		resp.setHeader("Access-Control-Allow-Origin", origemPermitida); // header pra qual origem será permitida
+//		resp.setHeader("Access-Control-Allow-Origin", origemPermitida); // header pra qual origem será permitida
+		resp.setHeader("Access-Control-Allow-Origin", moneyApiProperty.getOriginPermitida());//passando a configuraçã ode produção para origin
 		resp.setHeader("Access-Control-Allow-Credentials", "true"); // header de credenciais para que o cookie seja enviado com o refreshToken
 		
 		//Verificamos se os os metodos da requisicao sao um OPTIONS OU NAO
 		//verifico também se o header da minha requisicao é do tipo Origin
 		//Permitindo o pre-flytRequest**
+//		if("OPTIONS".equals(req.getMethod())
+//				&& origemPermitida.equals(req.getHeader("Origin"))){
 		if("OPTIONS".equals(req.getMethod())
-				&& origemPermitida.equals(req.getHeader("Origin"))){
+				&& moneyApiProperty.getOriginPermitida().equals(req.getHeader("Origin"))){//passando a configuraçã ode produção para origin
 			//setandos os headers do CrossOrigin
 			resp.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS");// seto o header e pra quais metodos ele vai permitir , get, post, put...
 			resp.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept");// quais Header vai permitir
