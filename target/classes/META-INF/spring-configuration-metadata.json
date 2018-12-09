@@ -23,11 +23,6 @@
       "sourceType": "com.money.api.config.property.MoneyApiProperty$Seguranca",
       "name": "money.seguranca.enable-https",
       "type": "java.lang.Boolean"
-    },
-    {
-      "sourceType": "com.money.api.config.property.MoneyApiProperty$Seguranca",
-      "name": "money.seguranca.enable-https",
-      "type": "java.lang.Boolean"
     }
   ]
 }
