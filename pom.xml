@@ -116,14 +116,13 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- tentando resolver o plemas de duplicaçã de classe no heroku 
+		<!-- tentando resolver o plemas de duplicaçã de classe no heroku -->
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct-processor</artifactId>
 			<version>${mapstruct.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		-->
 
 	</dependencies>
 
