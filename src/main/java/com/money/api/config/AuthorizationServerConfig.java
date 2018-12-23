@@ -1,17 +1,26 @@
 package com.money.api.config;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
+import com.money.api.config.token.CustomTokenEnhancer;
+
+@Profile("oauth-security")
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter{
@@ -41,15 +50,25 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-		endpoints
-			.tokenStore(tokenStore()) // armazena o token recebido, para que a Angular venha buscar o token e devolva para poder acessar a api /lancamento
-			.accessTokenConverter(accessTokenConverter())//conversor de token para jwt
-			.reuseRefreshTokens(false)//habilita o reuso to refresh token se o usuario estiver logado, o refresh tem validade igual a validade do token
+//		endpoints
+//			.tokenStore(tokenStore()) // armazena o token recebido, para que a Angular venha buscar o token e devolva para poder acessar a api /lancamento
+//			.accessTokenConverter(accessTokenConverter())//conversor de token para jwt
+//			.reuseRefreshTokens(false)//habilita o reuso to refresh token se o usuario estiver logado, o refresh tem validade igual a validade do token
 //			que esta cetado no accessTokenValiditySeconds(20), ou seja cada refresh , gera outro token de 20 sec.
 //			onde os fresh poden ser utilizado de acordo com refreshTokenValiditySeconds(3600 * 24); qu neste caso pode dar refresh um dia todo.
-			.authenticationManager(authenticationManager);//valida se ta tudo certo
+//			.authenticationManager(authenticationManager);//valida se ta tudo certo
+		//cadeia de token incrementados OU tokens melhorados
+		TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain(); // objetos que trabalham com os tokens
+		tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer(), accessTokenConverter())); 
+		
+		endpoints
+			.tokenStore(tokenStore())
+			.tokenEnhancer(tokenEnhancerChain)//agora passamos o token enhancer - não somente mais o accesstoken
+			.reuseRefreshTokens(false)
+			.authenticationManager(authenticationManager);
 	}
-		//UTILIZANDO JWT PARA ENVIO E GERAÇÂ ODE TOKEN SEM PRECISAR GRAVAR EM MEMORIA O TOKEN
+
+	//UTILIZANDO JWT PARA ENVIO E GERAÇÂ ODE TOKEN SEM PRECISAR GRAVAR EM MEMORIA O TOKEN
 	@Bean
 	public JwtAccessTokenConverter accessTokenConverter() { //metodo  que converte o token de sessao para jwt
 		JwtAccessTokenConverter accessTokenConverter = new JwtAccessTokenConverter();
@@ -61,5 +80,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	public TokenStore tokenStore() { //gera token
 //		return new InMemoryTokenStore(); // poderia ser armazenado no banco
 		return new JwtTokenStore(accessTokenConverter()); //gera to JWT
+	}
+	
+	public TokenEnhancer tokenEnhancer() {
+		return new CustomTokenEnhancer();
 	}
 }
