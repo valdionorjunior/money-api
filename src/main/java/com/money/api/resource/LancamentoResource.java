@@ -2,6 +2,7 @@ package com.money.api.resource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.LongBinaryOperator;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -106,6 +108,17 @@ public class LancamentoResource {
 		
 		return ResponseEntity.badRequest().body(erros);
 		
+	}
+	
+	@PutMapping("/{codigo}")
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA')")
+	public ResponseEntity<Lancamento>atualizar(@PathVariable Long codigo, @Valid @RequestBody Lancamento lancamento){
+		try {
+			Lancamento lancamentoSalvo = lancamentoService.atualizar(codigo, lancamento);
+			return ResponseEntity.ok(lancamentoSalvo);			
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.notFound().build();		
+		}
 	}
 
 }
