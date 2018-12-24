@@ -14,10 +14,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.catalina.util.ParameterMap;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+@Profile("oauth-security")
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)//Deixa a classe com prioridade muito alta, quero que essa classe seja um filtro com prioridade muito alta
 //pois preciso analizar a requisição antes de tudo pois se for uma requisição que tenha o grantype fresh token, preciso adicionala na requisição.

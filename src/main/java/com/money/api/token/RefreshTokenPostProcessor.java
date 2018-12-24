@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -20,7 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import com.money.api.config.property.MoneyApiProperty;
 
 // Classe para que possamos retirar o refresh token to corpo de resposta e faze-lo trafegar em coocke HTTP onde é mais seguro e n pode se pego no JS
-
+@Profile("oauth-security")
 @ControllerAdvice
 public class RefreshTokenPostProcessor implements ResponseBodyAdvice<OAuth2AccessToken>{// o ResponseBodyAdvice pega a resposta passada no seu 
 																						//parametro generico (objeto OAuth2 vindo no body), ou seja irá pegar so as resposta do meu OAuth2
