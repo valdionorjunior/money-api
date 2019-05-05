@@ -40,7 +40,7 @@ public class PessoaResource {
 	PessoaService pessoaService;
 
 	@PostMapping
-	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and #oauth2.hasScope('write')") //dando permissão do OAuth 2 aos mpetodo //  and #oauth2.hasScope('read') para escrita por causa do novo cliet mobile que possue
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_PESSOA') and #oauth2.hasScope('write')") //dando permissão do OAuth 2 aos mpetodo //  and #oauth2.hasScope('read') para escrita por causa do novo cliet mobile que possue
 	//permissão somente para leitura
 	public ResponseEntity<Pessoa> criar(@Valid @RequestBody Pessoa pessoa, HttpServletResponse response) {
 		Pessoa pessoaSalva = pessoaRepository.save(pessoa);
@@ -49,7 +49,7 @@ public class PessoaResource {
 	}
 
 	@GetMapping("/{codigo}")
-	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')") //dando permissão do OAuth 2 aos metodo // adicionado o  and #oauth2.hasScope('read') para somente leitura
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_PESSOA') and #oauth2.hasScope('read')") //dando permissão do OAuth 2 aos metodo // adicionado o  and #oauth2.hasScope('read') para somente leitura
 	//do usuario cliente mobile // esse escopo é o scopo do cliente, ja o ROLE é para o Usuario
 	public ResponseEntity<Pessoa> buscarPeloCodigo(@PathVariable Long codigo) {
 		Pessoa pessoa = pessoaRepository.findOne(codigo);
@@ -57,7 +57,7 @@ public class PessoaResource {
 	}
 	
 	@DeleteMapping("/{codigo}") //deleta pelo cogido
-	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and #oauth2.hasScope('write')") //dando permissão do OAuth 2 aos mpetodo //  and #oauth2.hasScope('read') para escrita por causa do novo cliet mobile que possue
+	@PreAuthorize("hasAuthority('ROLE_REMOVER_PESSOA') and #oauth2.hasScope('write')") //dando permissão do OAuth 2 aos mpetodo //  and #oauth2.hasScope('read') para escrita por causa do novo cliet mobile que possue
 	//permissão somente para leitura
 	@ResponseStatus(HttpStatus.NO_CONTENT) // codigo 204, deu certo mas n tenho nada para retornar
 	public void remover(@PathVariable Long codigo) { // pega codigo da urla passada
@@ -65,7 +65,7 @@ public class PessoaResource {
 	}
 	
 	@PutMapping("/{codigo}")
-	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and #oauth2.hasScope('write')") //dando permissão do OAuth 2 aos mpetodo //  and #oauth2.hasScope('read') para escrita por causa do novo cliet mobile que possue
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_PESSOA') and #oauth2.hasScope('write')") //dando permissão do OAuth 2 aos mpetodo //  and #oauth2.hasScope('read') para escrita por causa do novo cliet mobile que possue
 	//permissão somente para leitura
 	public ResponseEntity<Pessoa> atualiza(@PathVariable Long codigo, @Valid @RequestBody Pessoa pessoa){
 		Pessoa pessoaSalva = pessoaService.atualizar(codigo, pessoa);
@@ -73,7 +73,7 @@ public class PessoaResource {
 	}
 	
 	@PutMapping("{codigo}/ativo")
-	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and #oauth2.hasScope('write')") //dando permissão do OAuth 2 aos mpetodo //  and #oauth2.hasScope('read') para escrita por causa do novo cliet mobile que possue
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_PESSOA') and #oauth2.hasScope('write')") //dando permissão do OAuth 2 aos mpetodo //  and #oauth2.hasScope('read') para escrita por causa do novo cliet mobile que possue
 	//permissão somente para leitura
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void atualizarPropriedadeAtivo(@PathVariable Long codigo, @RequestBody Boolean ativo) {

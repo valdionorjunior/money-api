@@ -59,21 +59,21 @@ public class LancamentoResource {
 	
 	//pesquisa por paginação
 	@GetMapping
-	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')") //dando permissão do OAuth 2 aos metodo // adicionado o  and #oauth2.hasScope('read') para somente leitura
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')") //dando permissão do OAuth 2 aos metodo // adicionado o  and #oauth2.hasScope('read') para somente leitura
 	//do usuario cliente mobile // esse escopo é o scopo do cliente, ja o ROLE é para o Usuario
 	public Page<Lancamento>pesquisar(LancamentoFilter lancamentoFilter, Pageable pageable){
 		return lancamentoRepository.filtrar(lancamentoFilter, pageable);
 	}
 	
 	@GetMapping(params = "resumo")// pesquisa resumida, sem passar tudos os detalhes
-	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')") //dando permissão do OAuth 2 aos metodo // adicionado o  and #oauth2.hasScope('read') para somente leitura
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')") //dando permissão do OAuth 2 aos metodo // adicionado o  and #oauth2.hasScope('read') para somente leitura
 	//do usuario cliente mobile // esse escopo é o scopo do cliente, ja o ROLE é para o Usuario
 	public Page<ResumoLancamento>resumir(LancamentoFilter lancamentoFilter, Pageable pageable){
 		return lancamentoRepository.resumir(lancamentoFilter, pageable);
 	}
 	
 	@GetMapping("/{codigo}")
-	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')") //dando permissão do OAuth 2 aos metodo // adicionado o  and #oauth2.hasScope('read') para somente leitura
+	@PreAuthorize("hasAuthority('ROLE_PESQUISAR_LANCAMENTO') and #oauth2.hasScope('read')") //dando permissão do OAuth 2 aos metodo // adicionado o  and #oauth2.hasScope('read') para somente leitura
 	//do usuario cliente mobile // esse escopo é o scopo do cliente, ja o ROLE é para o Usuario
 	public ResponseEntity<Lancamento> buscaPeloCodigo(@PathVariable Long codigo){
 		Lancamento lancamento = lancamentoRepository.findOne(codigo);
@@ -82,7 +82,7 @@ public class LancamentoResource {
 	}
 	
 	@PostMapping
-	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and #oauth2.hasScope('write')") //dando permissão do OAuth 2 aos mpetodo //  and #oauth2.hasScope('read') para escrita por causa do novo cliet mobile que possue
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and #oauth2.hasScope('write')") //dando permissão do OAuth 2 aos mpetodo //  and #oauth2.hasScope('read') para escrita por causa do novo cliet mobile que possue
 	//permissão somente para leitura
 	public ResponseEntity<Lancamento> criaLancamento(@Valid @RequestBody Lancamento lancamento, HttpServletResponse response){
 		Lancamento lancamentoSalva = lancamentoService.salvar(lancamento);
@@ -92,7 +92,7 @@ public class LancamentoResource {
 	}
 	
 	@DeleteMapping("/{codigo}")
-	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and #oauth2.hasScope('write')") //dando permissão do OAuth 2 aos mpetodo //  and #oauth2.hasScope('read') para escrita por causa do novo cliet mobile que possue
+	@PreAuthorize("hasAuthority('ROLE_REMOVER_LANCAMENTO') and #oauth2.hasScope('write')") //dando permissão do OAuth 2 aos mpetodo //  and #oauth2.hasScope('read') para escrita por causa do novo cliet mobile que possue
 	//permissão somente para leitura
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long codigo) {
@@ -111,7 +111,7 @@ public class LancamentoResource {
 	}
 	
 	@PutMapping("/{codigo}")
-	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA')")
+	@PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO')")
 	public ResponseEntity<Lancamento>atualizar(@PathVariable Long codigo, @Valid @RequestBody Lancamento lancamento){
 		try {
 			Lancamento lancamentoSalvo = lancamentoService.atualizar(codigo, lancamento);

@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class MoneyApiProperty {
 	
 	//default de configuração  de origen permitida para outros servidores
-	private String originPermitida = "http://localhost:8000";
+	private String originPermitida = "http://localhost:4200";
 	
 	private final Seguranca seguranca = new Seguranca();
 	
